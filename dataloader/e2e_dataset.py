@@ -2,17 +2,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import os
-
-import AAnet_transforms
+import torch
+import dataloader.AAnet_transforms as AAnet_transforms
 from torch.utils.data import Dataset
-from utils import utils
-from utils.file_io import read_img, read_disp
+from utils.utils import read_img, read_disp
 from utils.kitti_util import get_depth_map , read_label
+
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 class e2e_dataset(Dataset):
-    def __init__(self ,data_dir,mode):
+    def __init__(self ,mode):
         self.mode = mode
         self.samples_paths = []
         sample = dict()
@@ -27,7 +27,7 @@ class e2e_dataset(Dataset):
             #                ]
             transform_list = [AAnet_transforms.ToTensor(),
                               AAnet_transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)]
-            self.transforms = AAnet_transforms.Compose(train_transform_list)
+            
             filenames = open("dataset/train_filenames.txt").read().split('\n')
             leftImagesDir = 'dataset/training/image_2/'
             rigthImagesDir =  'dataset/training/image_3/'
@@ -48,7 +48,7 @@ class e2e_dataset(Dataset):
             transform_list =[ AAnet_transforms.ToTensor(),
                               AAnet_transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
                             ]
-        self.transforms = AAnet_transforms.Compose(transform_list)
+        self.transform = AAnet_transforms.Compose(transform_list)
     
         for name in filenames:
                 sample = dict()
@@ -71,10 +71,11 @@ class e2e_dataset(Dataset):
         sample['disp'] = get_depth_map(index , self.samples_paths)
         
         #label
-        sample['label'] = read_label(index , self.samples_paths)
+
+        sample['label'] = torch.Tensor(read_label(index , self.samples_paths))
         
         sample = self.transform(sample)
         return sample
     
     def __len__(self):
-        return len(self.samples)
+        return len(self.samples_paths)

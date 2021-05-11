@@ -30,10 +30,6 @@ class ToTensor(object):
             disp = sample['disp']  # [H, W]
             sample['disp'] = torch.from_numpy(disp)
 
-        if 'pseudo_disp' in sample.keys():
-            disp = sample['pseudo_disp']  # [H, W]
-            sample['pseudo_disp'] = torch.from_numpy(disp)
-
         return sample
 
 

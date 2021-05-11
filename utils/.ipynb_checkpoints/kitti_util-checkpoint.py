@@ -4,7 +4,7 @@ from __future__ import print_function
 import numpy as np
 import cv2
 import os
-
+import torch
 
 
 
@@ -65,7 +65,10 @@ class Object3d(object):
         self.l = data[10] # box length (in meters)
         self.t = (data[11],data[12],data[13]) # location (x,y,z) in camera coord.
         self.ry = data[14] # yaw angle (around Y-axis in camera coordinates) [-pi..pi]
-
+    def get_list(self):
+        type_dict = {'Car': 0 , 'Van': 1 , 'Truck': 2 , 'Pedestrian':3 , 'Cyclist':4 , 'Tram' : 5 , 'Misc':6 ,'DontCare':7}
+        
+        return [type_dict[self.type] , self.truncation , self.occlusion, self.alpha ,self.h, self.w, self.l , self.t[0] , self.t[1] , self.t[2],self.ry]
     def print_object(self):
         print('Type, truncation, occlusion, alpha: %s, %d, %d, %f' % \
             (self.type, self.truncation, self.occlusion, self.alpha))
@@ -305,10 +308,10 @@ def inverse_rigid_trans(Tr):
     inv_Tr[0:3,3] = np.dot(-np.transpose(Tr[0:3,0:3]), Tr[0:3,3])
     return inv_Tr
 
-def read_label(label_filename):
-    lines = [line.rstrip() for line in open(label_filename)]
-    objects = [Object3d(line) for line in lines]
-    return objects
+#def read_label(label_filename):
+#    lines = [line.rstrip() for line in open(label_filename)]
+#    objects = [Object3d(line).get_list() for line in lines]
+#    return objects
 
 def load_image(img_filename):
     return cv2.imread(img_filename)
@@ -444,5 +447,5 @@ def get_depth_map(idx , samples_paths):
     
 def read_label(idx , samples_paths):
     lines = [line.rstrip() for line in open(samples_paths[idx]['label'])]
-    objects = [Object3d(line) for line in lines]
+    objects = [Object3d(line).get_list() for line in lines]
     return objects
