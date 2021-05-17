@@ -26,9 +26,9 @@ class ToTensor(object):
         sample['right'] = torch.from_numpy(right) / 255.
 
         # disp = np.expand_dims(sample['disp'], axis=0)  # [1, H, W]
-        if 'disp' in sample.keys():
-            disp = sample['disp']  # [H, W]
-            sample['disp'] = torch.from_numpy(disp)
+        ###if 'disp' in sample.keys():
+        ###    disp = sample['disp']  # [H, W]
+        ###    sample['disp'] = torch.from_numpy(disp)
 
         return sample
 
@@ -79,12 +79,6 @@ class RandomCrop(object):
                                             ((top_pad, 0), (0, right_pad)),
                                             mode='constant',
                                             constant_values=0)
-
-            if 'pseudo_disp' in sample.keys():
-                sample['pseudo_disp'] = np.lib.pad(sample['pseudo_disp'],
-                                                   ((top_pad, 0), (0, right_pad)),
-                                                   mode='constant',
-                                                   constant_values=0)
 
         else:
             assert self.img_height <= ori_height and self.img_width <= ori_width

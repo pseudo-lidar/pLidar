@@ -48,3 +48,13 @@ def read_disp(filename, subset=False):
     else:
         raise Exception('Invalid disparity file format!')
     return disp  # [H, W]
+
+
+def _read_kitti_disp(filename):
+    depth = np.array(Image.open(filename))
+    depth = depth.astype(np.float32) / 256.
+    return depth
+
+
+def get_depth(depth_file):
+    return np.load(depth_file).astype(np.float32)
