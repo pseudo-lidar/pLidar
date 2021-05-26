@@ -84,6 +84,7 @@ class aanet_interface():
     def aanet_train_batch(self,left , right , gt_disp):
         mask = (gt_disp > 0) & (gt_disp < 192)
         pred_disp_pyramid = self.aanet(left, right)
+        
         disp_loss = 0
         pyramid_loss = []
         # Loss weights
@@ -113,3 +114,5 @@ class aanet_interface():
         self.optimizer.zero_grad()
         pred_disp = pred_disp_pyramid[-1]
         return disp_loss , pred_disp
+    def opt_step(self):
+        self.optimizer.step()

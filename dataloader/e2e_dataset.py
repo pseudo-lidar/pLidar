@@ -9,7 +9,7 @@ import dataloader.AAnet_transforms as AAnet_transforms
 from torch.utils.data import Dataset
 from utils.utils import read_img, read_disp , get_depth
 from utils.kitti_util import get_depth_map , read_label
-
+import pickle
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
@@ -32,13 +32,13 @@ class e2e_dataset(Dataset):
                               ,AAnet_transforms.ToTensor(),
                               AAnet_transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)]
             
-            filenames = open("dataset/train.txt").read().split('\n')
-            leftImagesDir = 'dataset/training/image_2/'
-            rigthImagesDir =  'dataset/training/image_3/'
-            VelodyneDir = 'dataset/training/velodyne/'
-            CalibDir = 'dataset/training/calib/'
-            LabelDir = 'dataset/training/label_2/'
-            DepthDir = 'dataset/training/disparities/'
+            filenames = open("/notebooks/dataset/train.txt").read().split('\n')
+            leftImagesDir = '/notebooks/dataset/training/image_2/'
+            rigthImagesDir =  '/notebooks/dataset/training/image_3/'
+            VelodyneDir = '/notebooks/dataset/training/velodyne/'
+            CalibDir = '/notebooks/dataset/training/calib/'
+            LabelDir = '/notebooks/dataset/training/label_2/'
+            DepthDir = '/notebooks/dataset/training/disparities/'
         else:
             filenames = open("dataset/val_filenames.txt").read().split('\n')
             leftImagesDir = 'dataset/testing/image_2/'
@@ -70,7 +70,7 @@ class e2e_dataset(Dataset):
         sample = {}
         sample_path = self.samples_paths[index]
         sample['left_name'] = sample_path['left_name']
-
+        sample['idx'] = index
         sample['left'] = read_img(sample_path['left'])  # [H, W, 3]
         sample['right'] = read_img(sample_path['right'])
 
@@ -85,6 +85,9 @@ class e2e_dataset(Dataset):
 
         
         return sample
-    
+    def getinfos(self, infos_path):
+        with open(infos_path, 'rb') as f:
+            data = pickle.load(f)
+        return data
     def __len__(self):
         return len(self.samples_paths)

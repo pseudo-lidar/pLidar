@@ -113,3 +113,5 @@ class aanet_interface():
         self.optimizer.zero_grad()
         pred_disp = pred_disp_pyramid[-1]
         return disp_loss , pred_disp
+    def opt_step(self):
+        self.optimizer.step()
